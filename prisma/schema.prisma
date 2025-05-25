@@ -13,3 +13,52 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @db.VarChar(255)
+  email     String   @unique @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  appointments Appointment[]
+}
+
+model Barbershop {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @db.VarChar(255)
+  description String?  @db.Text
+  address     String   @db.VarChar(255)
+  phones      String[] @db.VarChar(255)
+  imageUrl    String   @db.VarChar(255)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  services BarbershopService[]
+}
+
+model BarbershopService {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String   @db.VarChar(255)
+  description  String?  @db.Text
+  imageUrl     String   @db.VarChar(255)
+  price        Decimal  @db.Decimal(10, 2)
+  barbershopId String   @db.Uuid
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  barbershop   Barbershop    @relation(fields: [barbershopId], references: [id])
+  appointments Appointment[]
+}
+
+model Appointment {
+  id                  String   @id @default(uuid()) @db.Uuid
+  userId              String   @db.Uuid
+  barbershopServiceId String   @db.Uuid
+  date                DateTime
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user              User              @relation(fields: [userId], references: [id])
+  barbershopService BarbershopService @relation(fields: [barbershopServiceId], references: [id])
+}
