@@ -12,3 +12,4 @@ services:
 
 volumes:
   fsw_barber_db_data:
+    external: true
